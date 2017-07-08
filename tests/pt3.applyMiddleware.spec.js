@@ -10,25 +10,25 @@ const createStore = require('../src/createStore');
 const { initialDucks, duckReducer } = require('./utils');
 
 describe('applyMiddleware', () => {
-  xit('returns a function (an enhancer)', () => {
+  it('returns a function (an enhancer)', () => {
     expect(applyMiddleware(thunk)).to.be.a('function');
   });
 
-  xit('enhancer is defined with one parameter (createStore)', () => {
+  it('enhancer is defined with one parameter (createStore)', () => {
     expect(applyMiddleware(thunk)).to.have.lengthOf(1);
   });
 
-  xit('enhancer returns another function (the enhanced createStore)', () => {
+  it('enhancer returns another function (the enhanced createStore)', () => {
     const enhancedCreateStore = applyMiddleware(thunk)(createStore);
     expect(enhancedCreateStore).to.be.a('function');
   });
 
-  xit('enhanced createStore has the same function signature as createStore', () => {
+  it('enhanced createStore has the same function signature as createStore', () => {
     const enhancedCreateStore = applyMiddleware(thunk)(createStore);
     expect(enhancedCreateStore).to.have.lengthOf(3); // reducer, preloadedState, and enhancer
   });
 
-  xit('enhanced createStore creates a store using the original createStore and returns it', () => {
+  it('enhanced createStore creates a store using the original createStore and returns it', () => {
     const createStoreSpy = sinon.spy(createStore);
     const enhancedCreateStore = applyMiddleware(thunk)(createStoreSpy);
     const enhancedStore = enhancedCreateStore(duckReducer);
@@ -49,7 +49,7 @@ describe('applyMiddleware', () => {
     
   */
 
-  xit('passes an object with getState and dispatch to all middleware passed in', () => {
+  it('passes an object with getState and dispatch to all middleware passed in', () => {
     const thunkSpy = sinon.spy(thunk);
     const loggerSpy = sinon.spy(logger);
     const enhancedCreateStore = applyMiddleware(thunkSpy, loggerSpy)(createStore);
@@ -86,7 +86,7 @@ describe('applyMiddleware', () => {
 
   */
 
-  xit('works with thunk middleware', () => {
+  it('works with thunk middleware', () => {
     const storeWithMiddleware = createStore(duckReducer, applyMiddleware(thunk));
 
     expect(storeWithMiddleware.getState()).to.equal(initialDucks);

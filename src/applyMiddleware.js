@@ -30,8 +30,59 @@
 
 const compose = require('./compose');
 
+// function applyMiddleware(...middlewares) {
+//   return (createStore) => (reducer, preloadedState, enhancer) => {
+//     const store = createStore(reducer, preloadedState, enhancer)
+//     const middlewareAPI = {
+//       getState: store.getState,
+//       dispatch: store.dispatch
+//     }
+//     const middlewareChain = middlewares.map(middleware => middleware(middlewareAPI))
+//     // why do you have to use the spread operator for this middleware chain?
+//     const enhancedDispatch = compose(...middlewareChain)(store.dispatch)
+//     store.dispatch = enhancedDispatch
+//     return store
+//   }
+// }
+
 function applyMiddleware(...middlewares) {
-  // CODE HERE!
+  return (createStore) => {
+    return (reducer, preloadedState, enhancer) => {
+      const store = createStore(reducer, preloadedState, enhancer);
+
+      const middlewareAPI = {
+        getState: store.getState,
+        dispatch: store.dispatch,
+      };
+
+      const chain = middlewares.map(middleware => middleware(middlewareAPI));
+      const enhancedDispatch = compose(...chain)(store.dispatch);
+      store.dispatch = enhancedDispatch;
+
+      return store;
+    };
+  };
 }
 
+
+
+
 module.exports = applyMiddleware;
+
+
+// ----------- EXAMPLE OF THUNK -------------------------
+
+// function createThunkMiddleware(extraArgument) {
+//   return ({ dispatch, getState }) => next => action => {
+//     if (typeof action === 'function') {
+//       return action(dispatch, getState, extraArgument);
+//     }
+
+//     return next(action);
+//   };
+// }
+
+// const thunk = createThunkMiddleware();
+// thunk.withExtraArgument = createThunkMiddleware;
+
+// export default thunk;
