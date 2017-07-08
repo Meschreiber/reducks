@@ -36,8 +36,44 @@
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+
 function createStore(reducer, preloadedState, enhancer) {
-  // CODE HERE!
+  if (typeof reducer !== 'function') throw new TypeError('Reducer must be a function.')
+  let state = reducer(preloadedState, { type: '@@init' })
+  let listeners = []
+
+  let store = {
+    getState: () => state,
+    dispatch: (action) => {
+      if (typeof action !== 'object') throw new TypeError('Dispatches must receive objects.')
+      if (!action.hasOwnProperty('type') || action.type === undefined) throw new Error('Actions must include types.')
+      state = reducer(state, action)
+      listeners.forEach(listener => listener())
+      return action
+    },
+    subscribe: (listener) => {
+      if (typeof listener !== 'function') throw new TypeError('Listener must be a function.')
+      listeners.push(listener)
+      let called = false
+      return () => {
+        const index = listeners.indexOf(listener);
+        if (index > -1 && !called) {
+          listeners.splice(index, 1);
+        }
+        called = true
+      }
+    },
+    replaceReducer: (nextReducer) => {
+       if (typeof nextReducer !== 'function') throw new TypeError('Reducer must be a function.')
+       reducer = nextReducer
+    }
+  }
+  if (typeof preloadedState === 'function') enhancer = preloadedState
+  if (enhancer) {
+    if (typeof enhancer !== 'function') throw new TypeError('Enhancer must be a function.')
+    store = enhancer(store)
+  }
+  return store
 }
 
 module.exports = createStore;
