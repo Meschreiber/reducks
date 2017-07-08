@@ -15,7 +15,10 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 function compose(...funcs) {
-  // CODE HERE!
+  // funcs is an array of functions
+  if (funcs.length === 0) return (...args) => args[0]
+  return funcs.reduce((f, g) => (...args) => f(g(...args)))
 }
+
 
 module.exports = compose;
